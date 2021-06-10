@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cherrytree>
+  <node name="Программирование с использованием SPL для K1986BE92" unique_id="1" prog_lang="custom-colors" tags="" readonly="0" custom_icon_id="0" is_bold="1" foreground="" ts_creation="1622146768" ts_lastsave="1623335486">
+    <rich_text>1. </rich_text>
+    <rich_text link="node 2">Работа с портами.</rich_text>
+    <rich_text>
+2. </rich_text>
+    <rich_text link="node 3">Работа с UART</rich_text>
+    <node name="Работа с портами" unique_id="2" prog_lang="custom-colors" tags="" readonly="0" custom_icon_id="0" is_bold="1" foreground="" ts_creation="1622148044" ts_lastsave="1623335176">
+      <rich_text justification="fill" scale="h2">	Для удобства настройки портов ввода-вывода используем специальную структуру типа </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_InitTypeDef</rich_text>
+      <rich_text justification="fill" scale="h2">. Вот пример ее описания: </rich_text>
+      <rich_text justification="fill" style="italic" scale="h2" weight="heavy">PORT_InitTypeDef GPIOInitStruct;</rich_text>
+      <rich_text justification="fill" scale="h2"> 
+Тип </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_InitTypeDef</rich_text>
+      <rich_text justification="fill" scale="h2"> описан в заголовке MDR32F9Qx_port.h.
+	Перед использованием структуры для конфигурации очередного набора линий ввода-вывода инициализируем ее следующим образом:  </rich_text>
+      <rich_text justification="fill" style="italic" scale="h2" weight="heavy">PORT_StructInit(&amp;GPIOInitStruct);</rich_text>
+      <rich_text justification="fill" scale="h2">
+Чтобы упростить работу с пинами, в модуле MDR32F9Qx_port.h предусмотрен ряд констант, описывающих соответствующие линии:</rich_text>
+      <rich_text>
+</rich_text>
+      <rich_text justification="left"></rich_text>
+      <rich_text>
+</rich_text>
+      <rich_text justification="fill" scale="h2">	Применяя к этим константам операцию поразрядного ИЛИ (символ | ), можно легко и понятно указывать требуемый для конфигурации набор линий. Например, если требуется сконфигурировать линии 2, 3 и 5,
+следует написать: 
+</rich_text>
+      <rich_text justification="fill" style="italic" scale="h2" weight="heavy">GPIOInitStruct.PORT_Pin = PORT_Pin_2 | PORT_Pin_3 | PORT_Pin_5;</rich_text>
+      <rich_text justification="fill" scale="h2"> Если требуется сконфигурировать только линию 4, то это выглядит так: </rich_text>
+      <rich_text justification="fill" style="italic" scale="h2" weight="heavy">GPIOInitStruct.PORT_Pin = PORT_Pin_4;</rich_text>
+      <rich_text justification="fill" scale="h2"> 
+Константа </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_Pin_All</rich_text>
+      <rich_text justification="fill" scale="h2"> описывает сразу все 16 линий.
+В поле </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_MODE</rich_text>
+      <rich_text justification="fill" scale="h2"> типа </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_MODE_TypeDef</rich_text>
+      <rich_text justification="fill" scale="h2"> указывают режим работы выбранных пинов. Здесь возможны два варианта значений:
+- PORT_MODE_ANALOG – линия является аналоговой;
+- PORT_MODE_DIGITAL – линия является цифровой.
+Режим аналоговой линии выбирается, если требуется работать с АЦП, ЦАП, аналоговым компаратором или внешним низкочастотным кварцевым резонатором. В остальных случаях используется режим цифровой
+линии.
+Для указания линии порта в каком состоянии она будет (вход или выход) используется поле </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_OE</rich_text>
+      <rich_text justification="fill" scale="h2">.
+Пример для выхода: </rich_text>
+      <rich_text justification="fill" style="italic" scale="h2" weight="heavy">GPIOInitStruct.PORT_OE = PORT_OE_OUT;</rich_text>
+      <rich_text justification="fill" scale="h2"> соответственно для входа </rich_text>
+      <rich_text justification="fill" style="italic" scale="h2" weight="heavy">GPIOInitStruct.PORT_OE = PORT_OE_IN;</rich_text>
+      <rich_text justification="fill" scale="h2">
+	В поле </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_SPEED</rich_text>
+      <rich_text justification="fill" scale="h2"> указывают примерную скорость работы линии, т.е. какой частоты сигнал может через нее проходить. Возможны следующие значения:
+- </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_OUTPUT_OFF</rich_text>
+      <rich_text justification="fill" scale="h2"> – выход выключен;
+- </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_SPEED_SLOW</rich_text>
+      <rich_text justification="fill" scale="h2"> – низкая скорость (фронт порядка 100 нс, частота до 5 МГц);
+- </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_SPEED_FAST</rich_text>
+      <rich_text justification="fill" scale="h2"> – высокая скорость (фронт порядка 20 нс, частота до 25 МГц);
+- </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_SPEED_MAXFAST</rich_text>
+      <rich_text justification="fill" scale="h2"> – предельно высокая скорость (фронт порядка 10 нс, частота до 50 МГц).
+Этот параметр влияет на форму фронтов формируемых импульсов. Если выбрать высокую скорость, то фронты будут крутыми, а если низкую – то пологими. Крутые фронты необходимы на высоких частотах, но они создают широкий спектр помех, что может неблагоприятно сказаться на работе
+схемы. Пологие же фронты создают гораздо меньше помех, но на больших частотах неприменимы. Пример: </rich_text>
+      <rich_text justification="fill" style="italic" scale="h2" weight="heavy">GPIOInitStruct.PORT_SPEED = PORT_SPEED_SLOW;</rich_text>
+      <rich_text justification="fill" scale="h2">
+	Поле </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_PD</rich_text>
+      <rich_text justification="fill" scale="h2"> задает тип цифрового выхода:
+- </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_PD_DRIVER</rich_text>
+      <rich_text justification="fill" scale="h2"> – управляемый драйвер;
+- </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_PD_OPEN</rich_text>
+      <rich_text justification="fill" scale="h2"> – открытый сток. Пример: </rich_text>
+      <rich_text justification="fill" style="italic" scale="h2" weight="heavy">GPIOInitStruct.PORT_PD = PORT_PD_DRIVER;</rich_text>
+      <rich_text justification="fill" scale="h2">
+	В полях </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_PULL_UP</rich_text>
+      <rich_text justification="fill" scale="h2"> и </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_PULL_DOWN</rich_text>
+      <rich_text justification="fill" scale="h2"> задают конфигурацию резисторов подтяжки линии ввода-вывода к цепям питания микроконтроллера. </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_PULL_UP</rich_text>
+      <rich_text justification="fill" scale="h2"> управляет резистором для подтяжки к
+плюсу питания. Возможны следующие значения:
+- </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_PULL_UP_OFF</rich_text>
+      <rich_text justification="fill" scale="h2"> – резистор подтяжки не используется;
+- </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_PULL_UP_ON</rich_text>
+      <rich_text justification="fill" scale="h2"> – резистор подтяжки используется.
+- </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_PULL_DOWN</rich_text>
+      <rich_text justification="fill" scale="h2"> управляет резистором для подтяжки к земле. Возможны следующие значения:
+- </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_PULL_DOWN_OFF</rich_text>
+      <rich_text justification="fill" scale="h2"> – резистор подтяжки не используется;
+- </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_PULL_DOWN_ON</rich_text>
+      <rich_text justification="fill" scale="h2"> – резистор подтяжки используется.
+	Когда поля структуры заполнены, вводим в действие требуемую конфигурацию </rich_text>
+      <rich_text justification="fill" style="italic" scale="h2" weight="heavy">PORT_Init (MDR_PORTC, &amp;GPIOInitStruct);</rich_text>
+      <rich_text justification="fill" scale="h2"> Первым параметром указывают название порта, для которого производится
+конфигурация. Предопределенные названия находятся в заголовке MDR32F9Qx_port.h:
+MDR_PORTA, MDR_PORTB, MDR_PORTC, MDR_PORTD, MDR_PORTE и MDR_PORTF. Если требуется сконфигурировать пины из нескольких портов, то и функция </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">PORT_Init </rich_text>
+      <rich_text justification="fill" scale="h2">должна вызываться несколько раз:
+отдельно для каждого порта.Также для нормальной работы портов необходимо разрешить их тактирование. Это делается путем вызова специальной функции </rich_text>
+      <rich_text justification="fill" scale="h2" weight="heavy">RST_CLK_PCLKcmd</rich_text>
+      <rich_text justification="fill" scale="h2"> из библиотечного модуля
+MDR32F9Qx_rst_clk.c: 
+</rich_text>
+      <rich_text justification="fill" style="italic" scale="h2" weight="heavy">RST_CLK_PCLKcmd (RST_CLK_PCLK_PORTB | RST_CLK_PCLK_PORTB |RST_CLK_PCLK_PORTB | RST_CLK_PCLK_PORTB | RST_CLK_PCLK_PORTB | RST_CLK_PCLK_PORTB,ENABLE);</rich_text>
+      <rich_text justification="fill">
+
+</rich_text>
+      <rich_text justification="fill" scale="h2">Пример программы мигание светодиодом на порту PB1:</rich_text>
+      <rich_text>
+
+</rich_text>
+      <rich_text justification="left"></rich_text>
+      <rich_text>
+
+</rich_text>
+      <rich_text scale="h2">Другой пример работы со светодиодами. К выводам 1 и 2 порта В подключены светодиоды (Red и Green), которые должны переключаться раз в секунду. Это можно сделать с
+помощью прерываний при переполнении системного таймера SysTick.</rich_text>
+      <rich_text>
+
+</rich_text>
+      <rich_text justification="left"></rich_text>
+      <rich_text>
+
+</rich_text>
+      <rich_text justification="center" scale="h1">	</rich_text>
+      <rich_text justification="center" scale="h1" weight="heavy">Работа с цифровых входом.</rich_text>
+      <rich_text>
+
+</rich_text>
+      <rich_text scale="h2">	Функция </rich_text>
+      <rich_text scale="h2" weight="heavy">PORT_ReadInputDataBit()</rich_text>
+      <rich_text scale="h2"> читает состояние определенного входа. В следующем примере производится чтение состояния входа PD5.
+</rich_text>
+      <rich_text justification="left" scale="h2"></rich_text>
+      <rich_text scale="h2">
+	Функция </rich_text>
+      <rich_text scale="h2" weight="heavy">PORT_ReadInputData</rich_text>
+      <rich_text scale="h2"> читает состояние всех входов указанного порта, возвращая 16-битное целое число (по количеству линий в порте):
+</rich_text>
+      <rich_text justification="left"></rich_text>
+      <rich_text>
+</rich_text>
+      <rich_text justification="center" scale="h1" weight="heavy">Работа с цифровым выходом</rich_text>
+      <rich_text>
+
+</rich_text>
+      <rich_text scale="h2">	Цифровой выход PB1. Требуется выдать на этот выход значение логической единицы. Это можно сделать с помощью функции </rich_text>
+      <rich_text scale="h2" weight="heavy">PORT_SetBits</rich_text>
+      <rich_text scale="h2">:</rich_text>
+      <rich_text>
+</rich_text>
+      <rich_text justification="left"></rich_text>
+      <rich_text>
+</rich_text>
+      <rich_text scale="h2">	Первый параметр – название порта, второй – пины, которые нужно установить в единицу. Естественно, можно указать сразу несколько пинов: </rich_text>
+      <rich_text style="italic" scale="h2" weight="heavy">PORT_SetBits (MDR_PORTB, PORT_Pin_0 | PORT_Pin_1 | PORT_Pin_2);</rich_text>
+      <rich_text scale="h2"> Если среди указанных пинов попадется цифровой вход, то ничего страшного не произойдет: эта линия будет проигнорирована. Выходы в пределах выбранного порта, которые не указаны при вызове функции, не будут подвергаться какому-либо воздействию. Для установки на выходе значения логического нуля можно применить функцию </rich_text>
+      <rich_text scale="h2" weight="heavy">PORT_ResetBits</rich_text>
+      <rich_text scale="h2">, например:</rich_text>
+      <rich_text>
+</rich_text>
+      <rich_text justification="left"></rich_text>
+      <rich_text>
+</rich_text>
+      <rich_text scale="h2">Функция </rich_text>
+      <rich_text scale="h2" weight="heavy">PORT_WriteBit </rich_text>
+      <rich_text scale="h2">позволяет установить выбранные выходы в указанное состояние (Bit_RESET – в 0; Bit_SET – в 1). В следующем примере в ноль будут установлены выходы PB0 и PB1, остальные же линии порта B никак не будут затронуты:</rich_text>
+      <rich_text>
+</rich_text>
+      <rich_text justification="left"></rich_text>
+      <rich_text>
+</rich_text>
+      <rich_text scale="h2">Функция </rich_text>
+      <rich_text scale="h2" weight="heavy">PORT_Write</rich_text>
+      <rich_text scale="h2"> позволяет просто записать в указанный порт (т.е. во всю совокупность его линий) требуемое значение, заданное 16-битным целым числом. В следующем примере линии PB0 и PB3 будут установлены в единицу, а остальные линии порта B – в ноль:
+</rich_text>
+      <rich_text justification="left" scale="h2"></rich_text>
+      <rich_text scale="h2">
+Таким образом, при вызове функции </rich_text>
+      <rich_text scale="h2" weight="heavy">PORT_Write</rich_text>
+      <rich_text scale="h2"> воздействию подвергаются все выходы в пределах выбранного порта. Линии, не являющиеся выходами, естественно, не затрагиваются. Нередко требуется узнать, в каком состоянии сейчас находится тот или иной цифровой выход. Для этого можно применить функцию </rich_text>
+      <rich_text scale="h2" weight="heavy">PORT_ReadInputDataBit()</rich_text>
+      <rich_text scale="h2"> и </rich_text>
+      <rich_text scale="h2" weight="heavy">PORT_ReadInputData()</rich_text>
+      <rich_text scale="h2">. Дело в том, что при их вызове в любом случае возвращается состояние линий ввода/вывода независимо от того, вход это или выход. В следующем примере в переменную flag считывается состояние выхода PB0:
+</rich_text>
+      <rich_text justification="left" scale="h2"></rich_text>
+      <rich_text scale="h2">
+Если выход установлен в 1, то и переменной flag присвоится значение 1. Если же выход установлен в 0, то и переменной flag присвоится значение 0.</rich_text>
+      <rich_text>
+
+</rich_text>
+      <rich_text justification="center" scale="h1" weight="heavy">Работа с кнопками</rich_text>
+      <rich_text>
+
+</rich_text>
+      <rich_text scale="h2">На рисунке кнопка подключена к выводу PD5. Пока кнопка не нажата, вывод PD5 через резистор притянут к +3,3 В, следовательно, на нем будет напряжение логической единицы (те же +3,3 В). Если кнопку нажать, вывод PD5 притянется к цепи питания 0 В, т.е. на PD5 будет напряжение логического нуля.</rich_text>
+      <rich_text>
+</rich_text>
+      <rich_text justification="left"></rich_text>
+      <rich_text>
+
+</rich_text>
+      <rich_text justification="left"></rich_text>
+      <rich_text>
+
+</rich_text>
+      <codebox char_offset="495" justification="left" frame_width="500" frame_height="100" width_in_pixels="1" syntax_highlighting="sh" highlight_brackets="1" show_line_numbers="0">#define PORT_Pin_0 0x0001
+#define PORT_Pin_1 0x0002
+#define PORT_Pin_2 0x0004
+#define PORT_Pin_3 0x0008
+#define PORT_Pin_4 0x0010
+#define PORT_Pin_5 0x0020
+#define PORT_Pin_6 0x0040
+#define PORT_Pin_7 0x0080
+#define PORT_Pin_8 0x0100
+#define PORT_Pin_9 0x0200
+#define PORT_Pin_10 0x0400
+#define PORT_Pin_11 0x0800
+#define PORT_Pin_12 0x1000
+#define PORT_Pin_13 0x2000
+#define PORT_Pin_14 0x4000
+#define PORT_Pin_15 0x8000
+#define PORT_Pin_All 0xFFFF</codebox>
+      <codebox char_offset="3968" justification="left" frame_width="500" frame_height="100" width_in_pixels="1" syntax_highlighting="sh" highlight_brackets="1" show_line_numbers="0">#include &lt;MDR32F9Qx_port.h&gt;
+#include &lt;MDR32F9Qx_rst_clk.h&gt;
+
+//      Определения
+#define LED_PERIOD      1000000
+
+#define LED_PORT_CLK    RST_CLK_PCLK_PORTB
+#define LED_PORT        MDR_PORTB
+#define LED_PORT_PIN    PORT_Pin_1
+
+//  Прототип функции задержки, реализованной ниже
+void Delay(int waitTicks);
+
+//  Точка входа, отсюда начинается исполнение программы
+int main()
+{
+  // Заводим структуру конфигурации вывода(-ов) порта GPIO
+  PORT_InitTypeDef GPIOInitStruct;
+
+  //  Включаем тактирование порта LED_PORT_CLK
+  RST_CLK_PCLKcmd (LED_PORT_CLK, ENABLE);
+	
+  //  Инициализируем структуру конфигурации вывода(-ов) порта значениями по умолчанию
+  PORT_StructInit(&amp;GPIOInitStruct);
+  
+  //  Изменяем значения по умолчанию на необходимые нам настройки
+  GPIOInitStruct.PORT_Pin        = LED_PORT_PIN;
+  GPIOInitStruct.PORT_OE         = PORT_OE_OUT;
+  GPIOInitStruct.PORT_SPEED      = PORT_SPEED_SLOW;
+  GPIOInitStruct.PORT_MODE       = PORT_MODE_DIGITAL;
+  
+  //  Применяем заполненную нами структуру для LED_PORT
+  PORT_Init(LED_PORT, &amp;GPIOInitStruct);
+
+  //  Запускаем бесконечный цикл обработки - Основной цикл	
+  while (1)
+  {
+    // Считываем состояние вывода LED_PORT_PIN
+    // Если на выводе логический "0", то выставляем вывод в логическую "1"
+    if (PORT_ReadInputDataBit (LED_PORT, LED_PORT_PIN) == 0)
+    {	
+	PORT_SetBits(LED_PORT, LED_PORT_PIN);	// LED
+    }	
+    
+    //  Задержка   
+    Delay(LED_PERIOD);
+
+    // Считываем состояние вывода LED_PORT_PIN
+    // Если на выводе = "1", то выставляем "0"
+    if (PORT_ReadInputDataBit (LED_PORT, LED_PORT_PIN) == 1)
+    {
+	PORT_ResetBits(LED_PORT, LED_PORT_PIN);
+    };
+    
+    //  Задержка    
+    Delay(LED_PERIOD);
+  }      
+}
+
+//  Простейшая функция задержки
+void Delay(int waitTicks)
+{
+  int i;
+  for (i = 0; i &lt; waitTicks; i++)
+  {
+    __NOP();
+  }	
+}</codebox>
+      <codebox char_offset="4199" justification="left" frame_width="500" frame_height="40" width_in_pixels="1" syntax_highlighting="c" highlight_brackets="1" show_line_numbers="0">#include "MDR32Fx.h"
+#include "core_cm3.h"
+#include "MDR32F9Qx_config.h"
+#include "system_MDR32F9Qx.h"
+#include "MDR32F9Qx_rst_clk.h"
+#include "MDR32F9Qx_port.h"
+
+static PORT_InitTypeDef PortInit;//объявление структуры PortInit
+volatile uint32_t delay_dec = 0;// объявление переменной delay_dec
+
+//Обработчик прерывания системного таймера
+void SysTick_Handler (void)
+{
+if (delay_dec !=0) delay_dec--;//вычитать из delay_dec, пока не станет равен 0
+}
+
+//функцияв ременной задержки
+void delay_ms (uint32_t delay_ms)
+{
+delay_dec = delay_ms;//присвоить delay_dec значение delay_ms
+while (delay_dec) {}; // выполнять функцию пока delay_dec не станет равным 0
+}
+
+int main(){
+RST_CLK_PCLKcmd(RST_CLK_PCLK_PORTB, ENABLE); );//включить тактирование порта B
+//Инициализация порта B
+PortInit.PORT_OE = PORT_OE_OUT; // направление передачи данных = Выход
+PortInit.PORT_FUNC = PORT_FUNC_PORT; // режим работы вывода порта = Порт
+PortInit.PORT_MODE = PORT_MODE_DIGITAL; // режим работы вывода= цифровой
+PortInit.PORT_SPEED = PORT_SPEED_SLOW; // скорость фронта вывода = медленная
+PortInit.PORT_Pin = (PORT_Pin_All);// выбор для инициализации
+PORT_Init(MDR_PORTB, &amp;PortInit); //инициализация порта B заданными параметрами
+//Инициализация системного таймера
+SysTick-&gt;LOAD |= (8000000/1000)-1; //значение задержки прерывания при тактовой частоте 8 МГц = 1мс
+SysTick-&gt;CTRL |= SysTick_CTRL_CLKSOURCE_Pos; //источник тактирования HCLK
+SysTick-&gt;CTRL |= SysTick_CTRL_COUNTFLAG_Pos;// при досчитывании до нуля таймер генерирует прерывание
+SysTick-&gt;CTRL |= ~SysTick_CTRL_ENABLE_Pos;//включить работу таймера
+
+while(1)
+{
+delay_ms(1000); //задержка 1 с
+PORT_SetBits(MDR_PORTB, PORT_Pin_All); //включить светодиоды
+delay_ms(1000);//задержка 1 с
+PORT_ResetBits(MDR_PORTB, PORT_Pin_All); //выключить светодиоды
+}
+}</codebox>
+      <codebox char_offset="4362" justification="left" frame_width="500" frame_height="60" width_in_pixels="1" syntax_highlighting="sh" highlight_brackets="1" show_line_numbers="0">uint8_t flag;
+...
+flag = PORT_ReadInputDataBit (MDR_PORTD, PORT_Pin_5);</codebox>
+      <codebox char_offset="4502" justification="left" frame_width="500" frame_height="60" width_in_pixels="1" syntax_highlighting="sh" highlight_brackets="1" show_line_numbers="0">uint16_t in_data;
+...
+in_data = PORT_ReadInputData (MDR_PORTD);</codebox>
+      <codebox char_offset="4662" justification="left" frame_width="500" frame_height="40" width_in_pixels="1" syntax_highlighting="sh" highlight_brackets="1" show_line_numbers="0">PORT_SetBits (MDR_PORTB, PORT_Pin_1);</codebox>
+      <codebox char_offset="5206" justification="left" frame_width="500" frame_height="40" width_in_pixels="1" syntax_highlighting="sh" highlight_brackets="1" show_line_numbers="0">PORT_ResetBits (MDR_PORTB, PORT_Pin_1);</codebox>
+      <codebox char_offset="5440" justification="left" frame_width="500" frame_height="40" width_in_pixels="1" syntax_highlighting="sh" highlight_brackets="1" show_line_numbers="0">PORT_WriteBit (MDR_PORTB, PORT_Pin_0 | PORT_Pin_1, Bit_RESET);</codebox>
+      <codebox char_offset="5695" justification="left" frame_width="500" frame_height="40" width_in_pixels="1" syntax_highlighting="sh" highlight_brackets="1" show_line_numbers="0">PORT_Write (MDR_PORTB, 0x0009);</codebox>
+      <codebox char_offset="6240" justification="left" frame_width="500" frame_height="40" width_in_pixels="1" syntax_highlighting="sh" highlight_brackets="1" show_line_numbers="0">uint8_t flag;
+...
+flag = PORT_ReadInputDataBit (MDR_PORTB, PORT_Pin_0);</codebox>
+      <encoded_png char_offset="6699" justification="left" link="">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</encoded_png>
+      <codebox char_offset="6702" justification="left" frame_width="500" frame_height="40" width_in_pixels="1" syntax_highlighting="c" highlight_brackets="1" show_line_numbers="0">#include &lt;MDR32F9Qx_port.h&gt;
+#include &lt;MDR32F9Qx_rst_clk.h&gt;
+
+#define LED1 PORT_Pin_1 //определить вывод как LED1
+static PORT_InitTypeDef PortInit; //объявление структуры PortInit
+
+int main()
+	{
+		RST_CLK_PCLKcmd(RST_CLK_PCLK_PORTD, ENABLE);//включить тактирование порта D
+		RST_CLK_PCLKcmd(RST_CLK_PCLK_PORTB, ENABLE); //включить тактирование порта B
+		//Инициализация порта D для кнопки
+		PortInit.PORT_OE = PORT_OE_IN; // направление передачи данных = вход
+		PortInit.PORT_FUNC = PORT_FUNC_PORT; // режим работы вывода порта = Порт
+		PortInit.PORT_MODE = PORT_MODE_DIGITAL; // режим работы выводе = цифровой
+		PortInit.PORT_SPEED = PORT_SPEED_SLOW; // скорость фронта вывода = медленный
+		PortInit.PORT_Pin = (PORT_Pin_5); // выбор вывода 5 для инициализации
+		PORT_Init(MDR_PORTD, &amp;PortInit); //инициализация порта С заданными параметрами
+		//Инициализация порта B для светодиода
+		PortInit.PORT_OE = PORT_OE_OUT; // направление передачи данных = Выход
+		PortInit.PORT_FUNC = PORT_FUNC_PORT; // режим работы вывода порта = Порт
+		PortInit.PORT_MODE = PORT_MODE_DIGITAL; // режим работы вывода 	= Цифровой
+		PortInit.PORT_SPEED = PORT_SPEED_SLOW; // скорость фронта вывода = медленный
+		PortInit.PORT_Pin = (PORT_Pin_All);// выбор всех выводов для инициализации
+		PORT_Init(MDR_PORTB, &amp;PortInit); //инициализация порта B заданными параметрами
+		PORT_SetBits(MDR_PORTB, PORT_Pin_All); // включить все светодиоды при старте
+
+	while(1)
+		{ 
+		if (PORT_ReadInputDataBit(MDR_PORTD,PORT_Pin_5) == 0)
+//если кнопка не нажата…
+		{
+			PORT_SetBits(MDR_PORTB, LED1); // включить светодиод на выводе 1 порта B
+		}
+		else
+		{
+			PORT_ResetBits(MDR_PORTB, LED1); // выключить светодиод на выводе 1 порта B
+		}
+		}
+	}</codebox>
+    </node>
+    <node name="Работа с UART" unique_id="3" prog_lang="custom-colors" tags="" readonly="0" custom_icon_id="0" is_bold="1" foreground="" ts_creation="1623335435" ts_lastsave="1623336580">
+      <rich_text scale="h2" weight="heavy">Передача символа на ПК каждые 5 секунд</rich_text>
+      <rich_text>.
+</rich_text>
+      <rich_text scale="h2">Вывод 1 порта F назначен в качестве линии передачи TXD приемопередатчика UART, а вывод 0 того же порта – в качестве линии приема RXD. При старте микроконтроллер начинает отсылать по
+последовательному интерфейсу на вход приемопередатчика UART цифровое значение переменной iкаждые 5 секунды. Значение переменной i после каждой отправки увеличивается на 1.</rich_text>
+      <rich_text>
+</rich_text>
+      <rich_text justification="left"></rich_text>
+      <rich_text>
+
+</rich_text>
+      <codebox char_offset="394" justification="left" frame_width="500" frame_height="40" width_in_pixels="1" syntax_highlighting="c" highlight_brackets="1" show_line_numbers="0">#include "MDR32F9Qx_uart.h"
+#include "MDR32F9Qx_port.h"
+#include "MDR32F9Qx_rst_clk.h"
+
+static PORT_InitTypeDef PortInit;//объявление структуры PortInit
+static UART_InitTypeDef UART_InitStructure;//объявление структуры UART_InitStructure
+volatile uint32_t delay_dec = 0;// объявление переменной delay_dec
+
+//Обработчик прерывания системного таймера
+void SysTick_Handler (void)
+{
+  if (delay_dec !=0) delay_dec--;
+}
+//функция временной задержки
+void delay_ms (uint32_t delay_ms)
+{
+  delay_dec = delay_ms;
+  while (delay_dec) {};
+}
+
+int main (void)
+{
+  uint8_t i = 0;//объявление переменной счетчика, хранящей передаваемое по UARTзначение
+  //Инициализация системного таймера для функции задержки (см. 4.2)
+  SysTick-&gt;LOAD |= (8000000/1000)-1;
+  SysTick-&gt;CTRL |= SysTick_CTRL_CLKSOURCE_Pos;
+  SysTick-&gt;CTRL |= SysTick_CTRL_COUNTFLAG_Pos;
+  SysTick-&gt;CTRL |= ~SysTick_CTRL_ENABLE_Pos;
+  RST_CLK_PCLKcmd(RST_CLK_PCLK_PORTF,ENABLE); //включить тактирование порта F
+
+  //Инициализация порта F для функции UART
+  PortInit.PORT_PULL_UP = PORT_PULL_UP_OFF;//подтяжка в питание выключена
+  PortInit.PORT_PULL_DOWN = PORT_PULL_DOWN_OFF;//подтяжка в ноль выключена
+  PortInit.PORT_PD_SHM = PORT_PD_SHM_OFF;//режим триггера Шмитта выключен
+  PortInit.PORT_PD = PORT_PD_DRIVER;//режим управляемого драйвера
+  PortInit.PORT_GFEN = PORT_GFEN_OFF;//входной фильтр выключен
+  PortInit.PORT_FUNC = PORT_FUNC_ALTER;//альтернативная функция порта
+  PortInit.PORT_SPEED = PORT_SPEED_MAXFAST;//скорость фронта вывода = быстрая
+  PortInit.PORT_MODE = PORT_MODE_DIGITAL; //режим работы вывода = цифровой
+  //Инициализация вывода 1 как UART_TX
+  PortInit.PORT_Pin = PORT_Pin_1;
+  PORT_Init(MDR_PORTF, &amp;PortInit);
+  //Инициализация вывода 0 как UART_RX
+  PortInit.PORT_OE = PORT_OE_IN;
+  PortInit.PORT_Pin = PORT_Pin_0;
+  PORT_Init(MDR_PORTF, &amp;PortInit);
+  RST_CLK_CPU_PLLconfig (RST_CLK_CPU_PLLsrcHSIdiv2,0);//конфигурация источника тактирования HSI делением частоты на 2 и без умножения
+  RST_CLK_PCLKcmd(RST_CLK_PCLK_UART1, ENABLE); //включить тактирование UART
+  UART_BRGInit(MDR_UART1, UART_HCLKdiv1);//делитель тактовой частоты UART = 1
+  //Конфигурация UART
+  UART_InitStructure.UART_BaudRate = 115000; //скорость передачи данных 15000 бод/сек
+  UART_InitStructure.UART_WordLength = UART_WordLength8b;//длина слова в посылке = 8бит
+  UART_InitStructure.UART_StopBits = UART_StopBits1;//один стоповый бит
+  UART_InitStructure.UART_Parity = UART_Parity_No;//без проверки четности
+  UART_InitStructure.UART_FIFOMode = UART_FIFO_ON;//включить работу буфера FIFO приемника и передачи
+  UART_InitStructure.UART_HardwareFlowControl = UART_HardwareFlowControl_RXE | UART_HardwareFlowControl_TXE;//Разрешить прием, разрешить передачу данных
+  //Инициализация UART с заданными параметрами
+  UART_Init (MDR_UART1,&amp;UART_InitStructure);
+  UART_Cmd(MDR_UART1,ENABLE); //включить сконфигурированный UART
+  
+  while (1)
+  {
+    UART_SendData (MDR_UART1, i++); //Послать значение счетчика по UART, и прибавить к нему 1
+    delay_ms(5000);//подождать 5 секунд
+  }
+}</codebox>
+    </node>
+  </node>
+</cherrytree>
